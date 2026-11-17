@@ -1,0 +1,12 @@
+.vscode/**
+src/**
+out/test/**
+**/*.map
+**/*.ts
+tsconfig.json
+main.cpp
+.lite-claude-diff/**
+.claude/**
+node_modules/**
+*.cpp
+*.vsix

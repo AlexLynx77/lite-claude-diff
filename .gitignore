@@ -1,0 +1,4 @@
+node_modules/
+out/
+*.vsix
+.lite-claude-diff/

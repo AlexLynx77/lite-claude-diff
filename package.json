@@ -1,0 +1,286 @@
+{
+  "name": "lite-claude-diff",
+  "displayName": "Lite Claude Diff",
+  "description": "See, review and accept/reject the code changes made by Claude Code \u2014 per hunk or per file.",
+  "version": "0.4.1",
+  "publisher": "lite-claude-diff",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexLynx77/lite-claude-diff.git"
+  },
+  "homepage": "https://github.com/AlexLynx77/lite-claude-diff#readme",
+  "bugs": {
+    "url": "https://github.com/AlexLynx77/lite-claude-diff/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Other"
+  ],
+  "keywords": [
+    "claude",
+    "claude code",
+    "diff",
+    "review",
+    "ai"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "liteClaudeDiff.installHook",
+        "title": "Enable Claude Code change tracking (install hook)",
+        "category": "Lite Claude Diff"
+      },
+      {
+        "command": "liteClaudeDiff.uninstallHook",
+        "title": "Disable Claude Code change tracking (remove hook)",
+        "category": "Lite Claude Diff"
+      },
+      {
+        "command": "liteClaudeDiff.refresh",
+        "title": "Refresh",
+        "category": "Lite Claude Diff",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "liteClaudeDiff.acceptAll",
+        "title": "Accept All Claude Changes",
+        "category": "Lite Claude Diff",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "liteClaudeDiff.rejectAll",
+        "title": "Reject All Claude Changes",
+        "category": "Lite Claude Diff",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "liteClaudeDiff.acceptFile",
+        "title": "Accept Claude Changes in File",
+        "category": "Lite Claude Diff",
+        "icon": "$(check)"
+      },
+      {
+        "command": "liteClaudeDiff.rejectFile",
+        "title": "Reject Claude Changes in File",
+        "category": "Lite Claude Diff",
+        "icon": "$(close)"
+      },
+      {
+        "command": "liteClaudeDiff.openDiff",
+        "title": "Open Claude Diff",
+        "category": "Lite Claude Diff",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "liteClaudeDiff.openFile",
+        "title": "Open File",
+        "category": "Lite Claude Diff",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "liteClaudeDiff.nextChange",
+        "title": "Go to Next Claude Change",
+        "category": "Lite Claude Diff",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "liteClaudeDiff.previousChange",
+        "title": "Go to Previous Claude Change",
+        "category": "Lite Claude Diff",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "liteClaudeDiff.acceptHunk",
+        "title": "Accept Change",
+        "category": "Lite Claude Diff"
+      },
+      {
+        "command": "liteClaudeDiff.rejectHunk",
+        "title": "Reject Change",
+        "category": "Lite Claude Diff"
+      },
+      {
+        "command": "liteClaudeDiff.review",
+        "title": "Review Claude Changes",
+        "category": "Lite Claude Diff",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "liteClaudeDiff.nextFile",
+        "title": "Next File Changed by Claude",
+        "category": "Lite Claude Diff",
+        "icon": "$(chevron-right)"
+      },
+      {
+        "command": "liteClaudeDiff.previousFile",
+        "title": "Previous File Changed by Claude",
+        "category": "Lite Claude Diff",
+        "icon": "$(chevron-left)"
+      },
+      {
+        "command": "liteClaudeDiff.pickFile",
+        "title": "Go to File Changed by Claude\u2026",
+        "category": "Lite Claude Diff",
+        "icon": "$(list-flat)"
+      }
+    ],
+    "views": {
+      "scm": [
+        {
+          "id": "liteClaudeDiff.changes",
+          "name": "Claude Changes"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "liteClaudeDiff.changes",
+        "contents": "Claude Code change tracking is disabled.\n[Enable tracking](command:liteClaudeDiff.installHook)",
+        "when": "!liteClaudeDiff.hookInstalled"
+      },
+      {
+        "view": "liteClaudeDiff.changes",
+        "contents": "No pending Claude changes. Edits made by Claude Code will show up here for review.",
+        "when": "liteClaudeDiff.hookInstalled"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "liteClaudeDiff.acceptAll",
+          "when": "view == liteClaudeDiff.changes && liteClaudeDiff.hasChanges",
+          "group": "navigation@1"
+        },
+        {
+          "command": "liteClaudeDiff.rejectAll",
+          "when": "view == liteClaudeDiff.changes && liteClaudeDiff.hasChanges",
+          "group": "navigation@2"
+        },
+        {
+          "command": "liteClaudeDiff.refresh",
+          "when": "view == liteClaudeDiff.changes",
+          "group": "navigation@3"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "liteClaudeDiff.openFile",
+          "when": "view == liteClaudeDiff.changes && viewItem == claudeChange",
+          "group": "inline@1"
+        },
+        {
+          "command": "liteClaudeDiff.rejectFile",
+          "when": "view == liteClaudeDiff.changes && viewItem == claudeChange",
+          "group": "inline@2"
+        },
+        {
+          "command": "liteClaudeDiff.acceptFile",
+          "when": "view == liteClaudeDiff.changes && viewItem == claudeChange",
+          "group": "inline@3"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "liteClaudeDiff.rejectFile",
+          "when": "liteClaudeDiff.activeFileTracked",
+          "group": "navigation@92"
+        },
+        {
+          "command": "liteClaudeDiff.acceptFile",
+          "when": "liteClaudeDiff.activeFileTracked",
+          "group": "navigation@93"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "liteClaudeDiff.acceptHunk",
+          "when": "false"
+        },
+        {
+          "command": "liteClaudeDiff.rejectHunk",
+          "when": "false"
+        },
+        {
+          "command": "liteClaudeDiff.openFile",
+          "when": "false"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "liteClaudeDiff.nextChange",
+        "key": "alt+f5",
+        "when": "editorTextFocus && liteClaudeDiff.activeFileTracked && !isInDiffEditor"
+      },
+      {
+        "command": "liteClaudeDiff.previousChange",
+        "key": "shift+alt+f5",
+        "when": "editorTextFocus && liteClaudeDiff.activeFileTracked && !isInDiffEditor"
+      },
+      {
+        "command": "liteClaudeDiff.nextFile",
+        "key": "ctrl+alt+]",
+        "when": "liteClaudeDiff.hasChanges"
+      },
+      {
+        "command": "liteClaudeDiff.previousFile",
+        "key": "ctrl+alt+[",
+        "when": "liteClaudeDiff.hasChanges"
+      }
+    ],
+    "configuration": {
+      "title": "Lite Claude Diff",
+      "properties": {
+        "liteClaudeDiff.codeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show Accept / Reject CodeLens above each change made by Claude."
+        },
+        "liteClaudeDiff.decorations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight lines added by Claude in green and mark removed lines in red."
+        },
+        "liteClaudeDiff.autoInstallHook": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically register the Lite Claude Diff hook in ~/.claude/settings.json (user level, applies to every project). Disable to manage it yourself with the Enable/Disable commands."
+        }
+      }
+    },
+    "colors": [
+      {
+        "id": "liteClaudeDiff.explorerMarker",
+        "description": "Colour of the dot shown in the Explorer on files changed by Claude.",
+        "defaults": {
+          "dark": "#B180F0",
+          "light": "#8250DF",
+          "highContrast": "#C8A2FF",
+          "highContrastLight": "#6E40C9"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node --test out/test/*.test.js",
+    "package": "npx --yes @vscode/vsce package",
+    "vscode:uninstall": "node ./out/uninstall.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "~1.85.0",
+    "@vscode/vsce": "^4.1.1",
+    "typescript": "^5.4.0"
+  }
+}
