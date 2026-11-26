@@ -14,8 +14,9 @@ Review happens **in the file itself**, like Antigravity / Copilot Edits:
   (`Ctrl+Alt+]` / `Ctrl+Alt+[` also move between files).
 - **In the editor**: lines added by Claude are highlighted in green, a red line marks where code was
   removed; hover a change to see the original code. `Alt+F5` / `Shift+Alt+F5` jump between changes.
-- **Explorer marker**: a purple `●` on files Claude modified or created (and their folders), gone once
-  the file is reviewed. Colour: `liteClaudeDiff.explorerMarker` in `workbench.colorCustomizations`.
+- **Explorer marker**: files Claude modified or created (and their folders) are shown in purple until
+  reviewed. Colour: `liteClaudeDiff.explorerMarker` in `workbench.colorCustomizations`. It takes
+  precedence over git's colour; git's `U` / `M` letters stay visible.
 - **CodeLens** above each change: `✓ Accept` · `✗ Reject`, and `Accept file` · `Reject file` at the top.
 - **Source Control › Claude Changes** lists the files; clicking one opens a side-by-side diff if you want it.
 - Rejecting restores the original code (undoable with `Ctrl+Z`); rejecting a file Claude created deletes it.

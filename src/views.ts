@@ -266,8 +266,9 @@ export class ExplorerDecorations implements vscode.FileDecorationProvider {
         if (!file) {
             return undefined;
         }
+        // No badge: just the file name in purple.
         const d = new vscode.FileDecoration(
-            '●',
+            undefined,
             file.existedBefore ? 'Modified by Claude (pending review)' : 'Created by Claude (pending review)',
             new vscode.ThemeColor('liteClaudeDiff.explorerMarker'),
         );

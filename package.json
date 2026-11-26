@@ -2,7 +2,7 @@
   "name": "lite-claude-diff",
   "displayName": "Lite Claude Diff",
   "description": "See, review and accept/reject the code changes made by Claude Code \u2014 per hunk or per file.",
-  "version": "0.4.1",
+  "version": "0.4.5",
   "publisher": "lite-claude-diff",
   "license": "MIT",
   "repository": {
@@ -259,7 +259,7 @@
     "colors": [
       {
         "id": "liteClaudeDiff.explorerMarker",
-        "description": "Colour of the dot shown in the Explorer on files changed by Claude.",
+        "description": "Colour of files changed by Claude in the Explorer.",
         "defaults": {
           "dark": "#B180F0",
           "light": "#8250DF",

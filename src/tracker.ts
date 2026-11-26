@@ -265,8 +265,11 @@ function stripBom(text: string): string {
 }
 
 async function readCurrent(fsPath: string): Promise<{ text: string; exists: boolean }> {
+    // Only trust the editor buffer when it holds unsaved edits. Otherwise read the disk: after Claude
+    // writes a file, an open document can lag behind (notably on /mnt/c under WSL), and comparing that
+    // stale text with the baseline made us think nothing changed and delete the record.
     const doc = vscode.workspace.textDocuments.find((d) => d.uri.scheme === 'file' && d.uri.fsPath === fsPath);
-    if (doc && !doc.isClosed) {
+    if (doc && !doc.isClosed && doc.isDirty) {
         return { text: doc.getText(), exists: true };
     }
     try {

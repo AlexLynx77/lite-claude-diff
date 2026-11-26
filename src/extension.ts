@@ -16,7 +16,7 @@ export async function activate(ctx: vscode.ExtensionContext): Promise<void> {
         view,
         review,
         new Decorator(tracker),
-        vscode.window.registerFileDecorationProvider(new ExplorerDecorations(tracker)),
+        explorerDecorations(tracker),
         vscode.workspace.registerTextDocumentContentProvider(BASELINE_SCHEME, new BaselineProvider(tracker)),
         vscode.languages.registerCodeLensProvider({ scheme: 'file' }, new HunkCodeLensProvider(tracker)),
         tracker.onDidChange(() => {
@@ -126,6 +126,46 @@ export async function activate(ctx: vscode.ExtensionContext): Promise<void> {
 }
 
 export function deactivate(): void {}
+
+/**
+ * Purple file names in the Explorer. VS Code applies a single colour per file and the provider
+ * registered *last* wins; git registers one provider per repository as repositories open, which
+ * would hide ours. So we re-register after git whenever a repository opens.
+ */
+function explorerDecorations(tracker: Tracker): vscode.Disposable {
+    const provider = new ExplorerDecorations(tracker);
+    let registration = vscode.window.registerFileDecorationProvider(provider);
+    let timer: NodeJS.Timeout | undefined;
+    const reRegister = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            registration.dispose();
+            registration = vscode.window.registerFileDecorationProvider(provider);
+        }, 500);
+    };
+    const subscriptions: vscode.Disposable[] = [];
+    const git = vscode.extensions.getExtension('vscode.git');
+    if (git) {
+        void Promise.resolve(git.activate()).then(
+            (exports: any) => {
+                const api = exports?.getAPI?.(1);
+                if (api) {
+                    subscriptions.push(api.onDidOpenRepository(reRegister));
+                    if (api.onDidChangeState) {
+                        subscriptions.push(api.onDidChangeState(reRegister));
+                    }
+                }
+                reRegister();
+            },
+            () => undefined,
+        );
+    }
+    return new vscode.Disposable(() => {
+        clearTimeout(timer);
+        registration.dispose();
+        subscriptions.forEach((d) => d.dispose());
+    });
+}
 
 const DISABLED_KEY = 'hookDisabledByUser';
 const WELCOME_KEY = 'welcomeShown';
