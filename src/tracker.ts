@@ -64,7 +64,9 @@ export class Tracker implements vscode.Disposable {
         const anyFile = vscode.workspace.createFileSystemWatcher('**/*');
         const onRecord = () => this.schedule();
         const onFile = (uri: vscode.Uri) => {
-            if (this.files.has(uri.fsPath)) {
+            // A folder event counts too: `rm -rf dir` only reports `dir`, not each file inside it.
+            const prefix = uri.fsPath + path.sep;
+            if (this.files.has(uri.fsPath) || [...this.files.keys()].some((p) => p.startsWith(prefix))) {
                 this.schedule();
             }
         };
@@ -80,6 +82,12 @@ export class Tracker implements vscode.Disposable {
             vscode.workspace.onDidChangeTextDocument((e) => onFile(e.document.uri)),
             vscode.workspace.onDidCloseTextDocument((d) => onFile(d.uri)),
             vscode.workspace.onDidChangeWorkspaceFolders(() => this.schedule()),
+            // Safety net: file events can be missed (notably on /mnt/c under WSL).
+            vscode.window.onDidChangeWindowState((s) => {
+                if (s.focused) {
+                    this.schedule();
+                }
+            }),
         );
     }
 

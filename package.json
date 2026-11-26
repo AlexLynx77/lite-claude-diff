@@ -2,7 +2,7 @@
   "name": "lite-claude-diff",
   "displayName": "Lite Claude Diff",
   "description": "See, review and accept/reject the code changes made by Claude Code \u2014 per hunk or per file.",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "publisher": "lite-claude-diff",
   "license": "MIT",
   "repository": {
